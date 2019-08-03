@@ -3,10 +3,13 @@ package com.cb.fts.sample.service;
 import com.cb.fts.sample.entities.vo.*;
 import com.cb.fts.sample.repositories.MovieRepository;
 import com.couchbase.client.java.search.SearchQuery;
+import com.couchbase.client.java.search.facet.NumericRangeFacet;
 import com.couchbase.client.java.search.facet.SearchFacet;
 import com.couchbase.client.java.search.queries.*;
 import com.couchbase.client.java.search.result.SearchQueryResult;
 import com.couchbase.client.java.search.result.SearchQueryRow;
+import com.couchbase.client.java.search.result.facets.DefaultNumericRangeFacetResult;
+import com.couchbase.client.java.search.result.facets.DefaultTermFacetResult;
 import com.couchbase.client.java.search.result.facets.FacetResult;
 import com.couchbase.client.java.search.result.facets.TermFacetResult;
 import com.couchbase.client.java.search.result.facets.TermRange;
@@ -39,6 +42,7 @@ public class MovieServiceImpl implements MovieService {
 
 
     private Result search(String words, Map<String, List<String>> facets, Boolean fuzzy){
+        System.out.println("Search request: words:" + words + " facets:" + facets + " fuzzy:" + fuzzy);
         String indexName = "movies_shingle";
 
         EntityExtractor entityExtractor = movieQueryParser.parse(words);
@@ -49,6 +53,8 @@ public class MovieServiceImpl implements MovieService {
             ftsQuery.or( getSubquery(entityExtractor.getWords(), "originalTitle", 1.15, fuzzy));
             ftsQuery.or( getSubquery(entityExtractor.getWords(), "collection.name", 1.1, fuzzy));
             ftsQuery.or( getSubquery(entityExtractor.getWords(), "overview", 1.0, fuzzy));
+            ftsQuery.or( getSubquery(entityExtractor.getWords(), "cast.name", 1.3, fuzzy));
+            ftsQuery.or( getSubquery(entityExtractor.getWords(), "cast.character", 1.3, fuzzy));
         }
 
         AbstractFtsQuery actors = getActorsDisjunctionAdjusted(words, entityExtractor, fuzzy);
@@ -72,14 +78,21 @@ public class MovieServiceImpl implements MovieService {
             conjunctionQuery = addFacetFilters(conjunctionQuery, facets);
         }
 
-
-        System.out.println("===================================================");
-        System.out.println(entityExtractor);
-        System.out.println("===================================================");
-
         SearchQuery searchQuery =  new SearchQuery(indexName, conjunctionQuery).highlight().limit(20);
         searchQuery.addFacet("genres",  SearchFacet.term("genres.name", 10));
-        searchQuery.addFacet("year",  SearchFacet.numeric("release_year", 10));
+        NumericRangeFacet yearFacet = SearchFacet.numeric("release_year", 10);
+        yearFacet = yearFacet.addRange("2019", 2019.0, 2020.0);
+        yearFacet = yearFacet.addRange("2018", 2018.0, 2019.0);
+        yearFacet = yearFacet.addRange("2017", 2017.0, 2018.0);
+        yearFacet = yearFacet.addRange("2016", 2016.0, 2017.0);
+        yearFacet = yearFacet.addRange("2000-2015", 2000.0, 2016.0);
+        yearFacet = yearFacet.addRange("1990-1999", 1990.0, 2000.0);
+        yearFacet = yearFacet.addRange("1980-1989", 1980.0, 1990.0);
+        yearFacet = yearFacet.addRange("1970-1979", 1970.0, 1980.0);
+        searchQuery.addFacet("year",  yearFacet);
+
+        //searchQuery.explain(true);
+
         SearchQueryResult result = movieRepository.getCouchbaseOperations().getCouchbaseBucket().query(searchQuery);
         return getSearchResults(result);
     }
@@ -103,11 +116,29 @@ public class MovieServiceImpl implements MovieService {
             } else if("collection".equals(entry.getKey())) {
                 addFilters(conjunctionQuery, "collection.name", entry.getValue());
             } else if("year".equals(entry.getKey())) {
-                addFilters(conjunctionQuery, "release_year", entry.getValue());
+                DisjunctionQuery disjunctionQuery = SearchQuery.disjuncts();
+                Iterator<String> selected = entry.getValue().iterator();
+                while(selected.hasNext()){
+                    String option = selected.next();
+                    Long min;
+                    Long max;
+                    if(option.contains("-")) {
+                        int index = option.indexOf("-");
+                        min = Long.parseLong(option.substring(0,index));
+                        max = Long.parseLong(option.substring(index+1, option.length()));
+                    } else {
+                        min = Long.parseLong(option);
+                        max = min + 1;
+                    }
+                    disjunctionQuery.or(SearchQuery.numericRange().min(min).max(max).field("release_year"));
+                }
+                conjunctionQuery.and(disjunctionQuery);
             }
         }
         return conjunctionQuery;
     }
+
+
 
     private void addFilters(ConjunctionQuery conjunctionQuery, String fieldName, List<String> values) {
         if(values.size() == 1) {
@@ -165,11 +196,11 @@ public class MovieServiceImpl implements MovieService {
         if(entityExtractor != null && entityExtractor.getEntities().keySet().contains(PERSON)) {
             List<String> names = entityExtractor.getEntities().get(PERSON);
             if(names.size() ==1) {
-                return getSubquery(names.get(0), "castAdjusted.name", 1.5, fuzzy );
+                return getSubquery(names.get(0), "cast.name", 1.5, fuzzy );
             } else {
                 DisjunctionQuery dq = new DisjunctionQuery();
                 for(String name: names){
-                    dq.or(getSubquery(name, "castAdjusted.name", 1.5, fuzzy ));
+                    dq.or(getSubquery(name, "cast.name", 1.5, fuzzy ));
                 }
                 return dq;
             }
@@ -177,8 +208,8 @@ public class MovieServiceImpl implements MovieService {
             if (entityExtractor.getWords().trim().isEmpty()) {
                 return null;
             }
-            AbstractFtsQuery castQuery = getSubquery(words, "castAdjusted.name", 1.15, fuzzy);
-            MatchQuery character = SearchQuery.match(words).field("castAdjusted.character");
+            AbstractFtsQuery castQuery = getSubquery(words, "cast.name", 1.15, fuzzy);
+            MatchQuery character = SearchQuery.match(words).field("cast.character");
             return SearchQuery.disjuncts(castQuery, character);
         }
     }
@@ -338,18 +369,28 @@ public class MovieServiceImpl implements MovieService {
 
         rt.setResults(movies);
 
-        if( result.facets()!= null & result.facets().size() >0) {
-            List<Facet> facets = new ArrayList<>();
-            for( Map.Entry<String, FacetResult> entry: result.facets().entrySet()) {
-                System.out.println(entry.getValue().getClass());
-                System.out.println("Found FacetResult: " + entry.getValue());
-                List<TermRange> termRanges = ((TermFacetResult) entry.getValue()).terms();
-                List<FacetItem> items =  termRanges.stream().map(e->new FacetItem(e)).collect(Collectors.toList());
-                facets.add(new Facet(entry.getKey(), items));
-            }
+        List<Facet> facets = new ArrayList<>();
 
-            rt.setFacets(facets);
+        DefaultTermFacetResult genres = (DefaultTermFacetResult) result.facets().get("genres");
+        if(genres != null & genres.terms().size() >0){
+
+            List<FacetItem> items =  genres.terms().stream().map(e->new FacetItem(e.name(), e.count())).collect(Collectors.toList());
+            facets.add(new Facet("genres", items));            
         }
+        DefaultNumericRangeFacetResult years = (DefaultNumericRangeFacetResult) result.facets().get("year");
+        if(years != null & years.numericRanges().size() >0){
+
+            List<FacetItem> items =  years.numericRanges().stream().map(e->new FacetItem(e.name(), e.count())).collect(Collectors.toList());
+            Collections.sort(items, new Comparator<FacetItem>() {
+                @Override
+                public int compare(FacetItem o1, FacetItem o2) {
+                    return o2.getName().compareTo(o1.getName());
+                }
+            });
+            facets.add(new Facet("year", items));            
+        }
+ 
+        rt.setFacets(facets);
         return rt;
     }
 

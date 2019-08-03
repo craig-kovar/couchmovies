@@ -16,9 +16,9 @@ public class EntityExtractor {
 
     public EntityExtractor(String words) {
 
-        words =  words.replaceAll(" +", " ");
+        words = words.replaceAll(" +", " ");
         this.words = words.toLowerCase().trim();
-        this.originalQuery = words.toLowerCase().trim();
+        words.toLowerCase().trim();
     }
 
     public void addEntity(EntityType type, String text ){
