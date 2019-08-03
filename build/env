@@ -1,0 +1,8 @@
+#!/bin/bash
+export DEMO_DIR=/Users/davidbrown/Documents/demos/couchflix
+export CONTAINER=couchbase
+export IMAGE=couchmovies
+export DATA_DIR=/Users/davidbrown/Documents/demos/couchflix/data
+export CB_SERVER=couchbase://127.0.0.1
+export CB_USER=Administrator
+export CB_PWD=password

@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "Starting Couchbase standalone docker image '$CONTAINER'  with name '$IMAGE'"
+docker run -d --name $IMAGE -p 8091-8096:8091-8096 -p 11210-11211:11210-11211 -v ~/Documents/demos/Docker/local:/mac $CONTAINER
+docker exec -it $IMAGE bash 
