@@ -259,22 +259,34 @@
     $.fn.select2.defaults.set( "theme", "bootstrap" );
 
     var movies = {};
+    var results = [];
     var editor = null;
 
     function loadDetails(movieId) {
-
       var that = this;
       var moviesTemplate = $("#movieDetailTemplate").html();
-      console.log(that.movies[movieId]);
+
       var movies = Mustache.to_html(moviesTemplate, that.movies[movieId]);
-      //.hide().html("You clicked on a checkbox.").fadeIn('slow');
 
-
+      // Couldn't find a way to use Mustache templates here, since they obscured the <mark></mark> tags in the text
+      var fragmentsHTML = '<table class="table"><thead><tr style="color:#f56b6b"><th>Field</th><th>Fragment</th></tr></thead><tbody>';
+      
+      for (var field in that.movies[movieId].searchStats.fragments){
+          var group = that.movies[movieId].searchStats.fragments[field];
+            for (var mark in group) {
+              fragmentsHTML = fragmentsHTML + '<tr><td style="color:#ff0">' + field;
+              fragmentsHTML = fragmentsHTML + '</td><td style="color:#bdbdbd">' + group[mark] + '</td></tr>';
+            }
+      }
+      fragmentsHTML = fragmentsHTML + '</tbody></table>';
+  
       if($("#movieCard").css("display") == "none"){
         $("#movieCard").html(movies);
+        $("#fragmentsTable").html(fragmentsHTML);
         $("#movieCard").slideToggle();
       } else {
         $("#movieCard").hide().html(movies).fadeIn('slow');
+        $("#fragmentsTable").html(fragmentsHTML);
       }
 
       $.get( "http://localhost:8080/api/movie/getCover?movieName="+that.movies[movieId].title, function( data ) {
@@ -311,7 +323,7 @@
 
       var query = $("#search").val();
       var fuzzy = $("#fuzzySearch").is(':checked');
-      var results = []
+      results = []
       movies = {}
       var that = this;
       var filters = "genres="+($("#genresTags").val()== null?"":$("#genresTags").val().join(","));
@@ -332,6 +344,7 @@
                   results.push(entry.stats);
                   entry.movie.stars = calculateStars(entry.movie.voteAverage);
                   entry.movie.overview = addEllipsis(entry.movie.overview);
+                  entry.movie.searchStats = entry.stats;
                   that.movies[entry.movie.id] = entry.movie;
 
                   if(entry.movie.releaseDate) {
@@ -375,7 +388,7 @@
 
               } else if(facet.name == "year") {
                 $("#yearFacetFilter").show();
-                var yearTemplate = $("#integerTemplate").html();
+                var yearTemplate = $("#tagsTemplate").html();
                 var yearHtml = Mustache.to_html(yearTemplate, {
                     "items": facet.items
                 });
@@ -432,7 +445,7 @@
 
     var lastSelected = null;
     function highlightBlock(id) {
-
+      console.log("highligh block:" + id );
       loadDetails(id);
       var previousSelect = $(".block-selected");
       previousSelect.removeClass("block-selected")
@@ -512,13 +525,35 @@
             <p style="color:#5d5d5d">It uses utility classes for typography and spacing to space content out within the larger container.</p>
           </div>
         </div>
-        <div class="col-md-6" id="movieCover"  >
-          <div style="color:#aaa; text-align: center;margin-top: 150px">
-            <i class="fas fa-spinner fa-spin fa-3x"></i>
+        <div class="col-md-6" id="fragmentDetail">
+
+            <div class="jumbotron" style="color:#fff;background-color:#000">
+              <p><strong>Result #{{searchStats.position}}</strong></p>
+              <p> Score: {{searchStats.score}}</p>
+              <div id="fragmentsTable">
+               <!-- <table class="table ">
+                <thead>
+                  <tr style="color:#f56b6b">
+                    <th>Field</th>
+                    <th>Fragment</th>
+                  </tr>
+                </thead>
+                <tbody>
+               {{#searchFragments.items}} 
+                  <tr>
+                    <td style="color:#ff0">{{field}}</td>
+                    <td style="color:#bdbdbd">{{mark}}</td>
+                  </tr>
+               {{/searchFragments.items}}
+                </tbody>
+              </table> -->
+            </div>
+            </div>
           </div>
         </div>
       </div>
   </script>
+
 
 
   <script id="tagsTemplate" type="text/template">
@@ -526,10 +561,11 @@
       <option value="{{name}}">{{name}} ({{total}})</option>
       {{/items}}
   </script>
-  <script id="integerTemplate" type="text/template">
+
+  <script id="fragmentTemplate" type="text/template">
     {{#items}}
     <option value="{{name}}">{{name}} ({{total}})</option>
     {{/items}}
-  </script>
+</script>
 
 </body>

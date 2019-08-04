@@ -42,7 +42,7 @@ public class MovieServiceImpl implements MovieService {
 
 
     private Result search(String words, Map<String, List<String>> facets, Boolean fuzzy){
-        System.out.println("Search request: words:" + words + " facets:" + facets + " fuzzy:" + fuzzy);
+
         String indexName = "movies_shingle";
 
         EntityExtractor entityExtractor = movieQueryParser.parse(words);
