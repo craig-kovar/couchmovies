@@ -6,7 +6,7 @@
       "docid_prefix_delim": "",
       "docid_regexp": "",
       "mode": "type_field",
-      "type_field": "_class"
+      "type_field": "movie"
     },
     "mapping": {
       "analysis": {
@@ -85,7 +85,7 @@
       "store_dynamic": false,
       "type_field": "_type",
       "types": {
-        "com.cb.fts.sample.entities.Movie": {
+        "type": {
           "dynamic": false,
           "enabled": true,
           "properties": {
@@ -125,7 +125,7 @@
                 }
               }
             },
-            "castAdjusted": {
+            "cast": {
               "dynamic": true,
               "enabled": true,
               "properties": {
@@ -346,7 +346,7 @@
     }
   },
   "sourceType": "couchbase",
-  "sourceName": "movies",
+  "sourceName": "moviedata",
   "sourceParams": {},
   "planParams": {
     "maxPartitionsPerPIndex": 171,
