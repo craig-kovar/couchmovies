@@ -34,7 +34,7 @@
     }
   },
   "sourceType": "couchbase",
-  "sourceName": "movies",
+  "sourceName": "moviedata",
   "sourceUUID": "926465a35710b15eb324fda31952ce01",
   "sourceParams": {},
   "planParams": {
