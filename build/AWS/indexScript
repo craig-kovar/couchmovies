@@ -1,0 +1,5 @@
+CREATE PRIMARY INDEX ON moviedata;
+CREATE INDEX `idx_type` ON `moviedata`(`type`);
+CREATE INDEX `idx_primaryName` ON `moviedata`(`type`,`primaryName`,`birthYear`) WHERE (`type` = "person");
+CREATE INDEX `idx_castName` ON `moviedata`((distinct (array (`c`.`name`) for `c` in `cast` end))) WHERE (`type` = "movie");
+CREATE INDEX `idx_movieTitle` ON `moviedata`(`type`,`title`,`revenue`) WHERE (`type` = "movie");

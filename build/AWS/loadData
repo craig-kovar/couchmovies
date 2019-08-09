@@ -2,3 +2,4 @@
 couchbase-cli bucket-create -c $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --bucket $CB_BUCKET --bucket-type couchbase --bucket-ramsize 2048 --bucket-replica 0 --bucket-priority low --bucket-eviction-policy valueOnly --enable-flush 1 --wait
 cbimport json -c $CB_ENGINE -u $CB_USER -p $CB_PASSWORD -b $CB_BUCKET -d file://$DEMO_DIR/data/moviedata.json  -f lines -g %type%::%id% -t 4
 curl -XPUT -H "Content-type:application/json" http://$CB_USER:$CB_PASSWORD@127.0.0.1:8094/api/index/movies_shingle -d @$DEMO_DIR/indexes/movies_shingle.json
+cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD -f indexScript
