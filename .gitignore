@@ -1,3 +1,5 @@
 data/moviedata.json
+data/tweetsource.json
 ~*
 target/
+feeder/tweet-feeder/target

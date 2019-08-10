@@ -1,0 +1,34 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug (Launch)",
+            "request": "launch",
+            "mainClass": "com.couchbase.demo.TweetFeeder"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch) - Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-SampleApplication<kubernetes-starter-kit>",
+            "request": "launch",
+            "mainClass": "com.cb.fts.sample.SampleApplication",
+            "projectName": "kubernetes-starter-kit"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ScoreCalc<kubernetes-starter-kit>",
+            "request": "launch",
+            "mainClass": "com.cb.fts.sample.service.ScoreCalc",
+            "projectName": "kubernetes-starter-kit"
+        }
+    ]
+}
