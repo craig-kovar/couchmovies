@@ -1,3 +1,5 @@
+
+copy to clipboard
 {
  "name": "movies_shingle",
  "type": "fulltext-index",
@@ -11,6 +13,14 @@
   "mapping": {
    "analysis": {
     "analyzers": {
+     "character_analyzer": {
+      "token_filters": [
+       "single_1_2",
+       "to_lower"
+      ],
+      "tokenizer": "unicode",
+      "type": "custom"
+     },
      "names_analyzer": {
       "token_filters": [
        "to_lower",
@@ -90,9 +100,25 @@
      "enabled": true,
      "properties": {
       "cast": {
-       "dynamic": true,
+       "default_analyzer": "names_analyzer",
+       "dynamic": false,
        "enabled": true,
        "properties": {
+        "character": {
+         "enabled": true,
+         "dynamic": false,
+         "fields": [
+          {
+           "analyzer": "titles_analyzer",
+           "include_in_all": true,
+           "include_term_vectors": true,
+           "index": true,
+           "name": "character",
+           "store": true,
+           "type": "text"
+          }
+         ]
+        },
         "name": {
          "enabled": true,
          "dynamic": false,
@@ -317,5 +343,5 @@
   "maxPartitionsPerPIndex": 171,
   "numReplicas": 0
  },
- "uuid": "1ce039cb52e35672"
+ "uuid": "58c7827fdbe97f7e"
 }

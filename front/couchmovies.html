@@ -280,7 +280,7 @@
         $("#fragmentsTable").html(fragmentsHTML);
       }
 
-      $.get( "http://localhost:8080/api/movie/getCover?movieName="+that.movies[movieId].title, function( data ) {
+      $.get( "http://http://3.14.224.51:8080/api/movie/getCover?movieName="+that.movies[movieId].title, function( data ) {
             console.log(data.url);
             $("#movieCover").html("");
             $("#movieCover").css({
@@ -321,7 +321,7 @@
       filters += "::collection="+($("#collectionFacet").val()== null?"":$("#collectionFacet").val().join(","));
       filters += "::year="+($("#yearFacet").val()== null?"":$("#yearFacet").val().join(","));
 
-      $.get( "http://localhost:8080/api/movie/search?query="+query+"&filters="+filters+"&fuzzy="+fuzzy, function( data ) {
+      $.get( "http://3.14.224.51:8080/api/movie/search?query="+query+"&filters="+filters+"&fuzzy="+fuzzy, function( data ) {
 
           var facets = data.facets;
 
