@@ -3,3 +3,5 @@ data/tweetsource.json
 ~*
 target/
 feeder/tweet-feeder/target
+*.pptx
+*.docx
