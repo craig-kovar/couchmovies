@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "Purging ONLY the tweettarget bucket (even though the following warning is more dire)"
+couchbase-cli bucket-flush -c $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --bucket tweettarget
+cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD -f firstTweet.sql
+echo "One tweet has been added to tweettarget so that Tableau dashboard will open and show a map"

@@ -50,7 +50,7 @@ public final class TweetFeeder {
              JsonObject tweet = tweets.next().value().getObject("tweetsource");
                 Long id = tweet.getLong("tweetId");
                 JsonDocument doc = JsonDocument.create("tweet::" + id, tweet);
-                targetBucket.insert(doc);
+                targetBucket.upsert(doc);
                 count = count + 1;
                 System.out.println("Inserted tweet id: " + id + " total: " + count );
                 TimeUnit.SECONDS.sleep(1);

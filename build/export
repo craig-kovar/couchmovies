@@ -1,0 +1,10 @@
+#!/bin/bash
+echo "Exporting movie data"
+cbexport json -c $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --bucket $CB_MOVIE_BUCKET --format lines -o $DATA_DIR/moviedata.json
+zip $DATA_DIR/moviedata.zip $DATA_DIR/moviedata.json
+rm $DATA_DIR/moviedata.json
+echo "Exporting Tweet source data"
+cbexport json -c $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --bucket $CB_TWEET_SOURCE_BUCKET --format lines -o $DATA_DIR/tweetsource.json
+zip $DATA_DIR/tweetsource.zip $DATA_DIR/tweetsource.json
+rm $DATA_DIR/tweetsource.json
+echo "Export complete"
