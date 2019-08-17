@@ -62,6 +62,7 @@ public class MovieServiceImpl implements MovieService {
         }
         SearchQuery searchQuery =  new SearchQuery(indexName, ftsQuery).limit(20);
         searchQuery.fields("title");
+        // searchQuery.fields("title", "cast.character", "cast.name");  //The character names are strange, have lots of special characters and aren't good for autocomplete
 
         SearchQueryResult result = movieRepository.getCouchbaseOperations().getCouchbaseBucket().query(searchQuery);
         if (result != null && result.errors().isEmpty()) {
@@ -78,7 +79,12 @@ public class MovieServiceImpl implements MovieService {
             Iterator<SearchQueryRow> resultIterator = result.hits().iterator();
             while (resultIterator.hasNext()) {
                 SearchQueryRow row = resultIterator.next();
-                options.add(row.fields().get("title"));
+                String title = row.fields().get("title");
+                if (title != null) options.add(title);
+                // String character = row.fields().get("cast.character");
+                // if (character != null) options.add(character);
+                // String name = row.fields().get("cast.name");
+                // if (name != null) options.add(name);               
              }
         }
 
