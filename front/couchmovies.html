@@ -54,11 +54,11 @@
   border: 0;
   background: #fff;
   display: block;
-  width: 100%;
-  padding: 10px 32px 10px 70px;
+  width: 422px;
+  padding: 10px; 
   font-size: 18px;
   color: #666;
-  border-radius: 34px;
+  border-radius: 10px;
 }
 
 .s006 form .inner-form .input-field input.placeholder {
@@ -80,46 +80,6 @@
   box-shadow: none;
   outline: 0;
 }
-
-.s006 form .inner-form .input-field .btn-search {
-  width: 70px;
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-align: center;
-      align-items: center;
-  position: absolute;
-  left: 0;
-  height: 80%;
-  background: transparent;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  display: flex;
-  -ms-flex-pack: center;
-      justify-content: center;
-  align-items: center;
-}
-
-.s006 form .inner-form .input-field .btn-search svg {
-  fill: #ccc;
-  width: 30px;
-  height: 30px;
-  transition: all .2s ease-out, color .2s ease-out;
-}
-
-.s006 form .inner-form .input-field .btn-search:hover, .s006 form .inner-form .input-field .btn-search:focus {
-  outline: 0;
-  box-shadow: none;
-}
-
-.s006 form .inner-form .input-field .btn-search:hover svg, .s006 form .inner-form .input-field .btn-search:focus svg {
-  fill: #666;
-}
-
-.s006 form .suggestion-wrap {
-  padding: 0 15px;
-}
-
 
 @media screen and (max-width: 767px) {
   .s006 form .inner-form .input-field {
@@ -174,6 +134,55 @@
     border-top: 1px solid #fff;
 }
 
+.typeahead, .tt-query, .tt-hint {
+	border: 2px solid #CCCCCC;
+	border-radius: 8px;
+	font-size: 22px; /* Set input font size */
+	height: 30px;
+	line-height: 30px;
+	outline: medium none;
+	padding: 8px 12px;
+	width: 396px;
+}
+.typeahead {
+	background-color: #FFFFFF;
+}
+.typeahead:focus {
+	border: 2px solid #0097CF;
+}
+.tt-query {
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+}
+.tt-hint {
+	color: #999999;
+}
+.tt-menu {
+	background-color: #FFFFFF;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	border-radius: 8px;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+	margin-top: 12px;
+	padding: 2px 0;
+	width: 422px;
+}
+.tt-suggestion {
+	font-size: 14px;  /* Set suggestion dropdown font size */
+	padding: 3px 3px;
+}
+.tt-suggestion:hover {
+	cursor: pointer;
+	background-color: #0097CF;
+	color: #FFFFFF;
+}
+.tt-suggestion p {
+	margin: 0;
+}
+
+.empty-message {
+    padding-left: 12px;
+    color: #666;
+}
+
 </style>
 
 <body style="background: #000">
@@ -193,12 +202,7 @@
     <form onsubmit="event.preventDefault();searchMovies(true)">
         <div class="inner-form ">
           <div class="input-field">
-            <button class="btn-search" type="button" onclick="javascript:search(true)">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
-              </svg>
-            </button>
-            <input id="search" type="text" placeholder="" value="" autocomplete="off"/>
+            <input id="search"  type="text" placeholder="" value="" autocomplete="off" spellcheck="false"/>
           </div>
         </div>
     </form>
@@ -253,6 +257,12 @@
     var results = [];
     var editor = null;
 
+    $('#search').on('keyup', function (e) {
+    if (e.keyCode === 13) {
+        setTimeout(function(){$('#search').typeahead('close'); }, 500);
+        searchMovies(true);
+    }
+});
     function loadDetails(movieId) {
       var that = this;
       var moviesTemplate = $("#movieDetailTemplate").html();
@@ -280,7 +290,7 @@
         $("#fragmentsTable").html(fragmentsHTML);
       }
 
-      $.get( "http://http://3.14.224.51:8080/api/movie/getCover?movieName="+that.movies[movieId].title, function( data ) {
+      $.get( "http://" + window.location.hostname + ":8080/api/movie/getCover?movieName="+that.movies[movieId].title, function( data ) {
             console.log(data.url);
             $("#movieCover").html("");
             $("#movieCover").css({
@@ -293,7 +303,8 @@
 
 
     function searchMovies(updateFilters) {
-
+      
+      console.log("searchMovies called");
       if($("#movieCard").css("display") == "block"){
         $("#movieCard").slideToggle();
       }
@@ -321,7 +332,7 @@
       filters += "::collection="+($("#collectionFacet").val()== null?"":$("#collectionFacet").val().join(","));
       filters += "::year="+($("#yearFacet").val()== null?"":$("#yearFacet").val().join(","));
 
-      $.get( "http://3.14.224.51:8080/api/movie/search?query="+query+"&filters="+filters+"&fuzzy="+fuzzy, function( data ) {
+      $.get( "http://" + window.location.hostname + ":8080/api/movie/search?query="+query+"&filters="+filters+"&fuzzy="+fuzzy, function( data ) {
 
           var facets = data.facets;
 
@@ -557,4 +568,47 @@
     {{/items}}
 </script>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.2/handlebars.js"></script> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.2.1/typeahead.jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.2.1/bloodhound.min.js"></script>
+  <script>
+  var channels = new Bloodhound({  
+      name: 'channel',  
+      datumTokenizer: function (datum) {
+          return Bloodhound.tokenizers.whitespace(datum.value);
+      },
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      remote: {
+          url: "http://" + window.location.hostname + ":8080/api/movie/autocomplete?query=%searchValue",
+          prepare: function (query,settings) {
+          // settings.dataType = "jsonp";
+            settings.url = settings.url.replace('%searchValue', query)
+                        return settings;
+
+            },
+          filter: function (response) {
+            console.log("Autocomplete returned: " + JSON.stringify(response))
+              return response;
+        }
+      }
+  });
+  channels.initialize();
+  $('#search').typeahead(null, {
+      name: 'channel',
+      limit: 10,
+      highlight : true,
+      hint: true,
+      minLength: 3,
+      source: channels.ttAdapter(),
+      templates: {
+ //           empty: '<div class="empty-message">No matches</div>',
+            suggestion: function (data) {
+                return '<div>' + data + '</div>';
+            }
+        }
+  }).bind('typeahead:select', function (ev, suggestion) {
+    console.log('Selection: ' + suggestion);
+    searchMovies(true);
+});
+  </script>
 </body>

@@ -13,6 +13,8 @@ import com.couchbase.client.java.search.result.facets.DefaultTermFacetResult;
 import com.couchbase.client.java.search.result.facets.FacetResult;
 import com.couchbase.client.java.search.result.facets.TermFacetResult;
 import com.couchbase.client.java.search.result.facets.TermRange;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +42,48 @@ public class MovieServiceImpl implements MovieService {
         return search(phrase, facets, fuzzy);
     }
 
+    @Override
+    public List<String> autocomplete(String query) {
+        System.out.println("Auto Complete Request -  query:" + query);
+        return complete(query);
+    }
+
+
+    private List<String> complete(String words) {
+        String indexName = "movies_autocomplete";
+        EntityExtractor entityExtractor = movieQueryParser.parse(words);
+        DisjunctionQuery ftsQuery = new DisjunctionQuery();
+
+        if(entityExtractor.getWords().trim().length() >0) {
+            MatchQuery matchQuery = SearchQuery.match(entityExtractor.getWords()).field("title").analyzer("simple");
+            ftsQuery = ftsQuery.or(matchQuery);
+            //.fuzziness(1);
+
+        }
+        SearchQuery searchQuery =  new SearchQuery(indexName, ftsQuery).limit(20);
+        searchQuery.fields("title");
+
+        SearchQueryResult result = movieRepository.getCouchbaseOperations().getCouchbaseBucket().query(searchQuery);
+        if (result != null && result.errors().isEmpty()) {
+            // for (SearchQueryRow row: result.hits()){
+            //     System.out.println(row);
+            // }
+            
+        } else {
+            System.out.println("Bad autocomple result: " + result.errors());
+        }
+        List<String> options = new ArrayList<String>();
+
+        if (result != null && result.errors().isEmpty()) {
+            Iterator<SearchQueryRow> resultIterator = result.hits().iterator();
+            while (resultIterator.hasNext()) {
+                SearchQueryRow row = resultIterator.next();
+                options.add(row.fields().get("title"));
+             }
+        }
+
+        return options;
+    }    
 
     private Result search(String words, Map<String, List<String>> facets, Boolean fuzzy){
 
@@ -355,6 +399,7 @@ public class MovieServiceImpl implements MovieService {
 
     private Result getSearchResults(SearchQueryResult result){
 
+    
         Result rt = new Result();
         List<SearchResult> movies = new ArrayList<>();
         if (result != null && result.errors().isEmpty()) {
