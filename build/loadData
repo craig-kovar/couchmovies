@@ -1,7 +1,21 @@
 #!/bin/bash -x
-export CB_BUCKET=movies
-echo "Loading sample data into '$IMAGE'"
-couchbase-cli bucket-create -c $CB_SERVER -u $CB_USER -p $CB_PWD --bucket $CB_BUCKET --bucket-type couchbase --bucket-ramsize 1024 --bucket-replica 0 --bucket-priority low --bucket-eviction-policy valueOnly --enable-flush 1 --wait 
-cbimport json -c $CB_SERVER -u $CB_USER -p $CB_PWD -b $CB_BUCKET -d file://$DEMO_DIR/data/cb-movies-dataset2.json  -f list -g key::%id% -t 4
-cbimport json -c $CB_SERVER -u $CB_USER -p $CB_PWD -b $CB_BUCKET -d file://$DEMO_DIR/data/cb-movies-actors.json  -f list -g %id% -t 4 -v
-curl -XPUT -H "Content-type:application/json" http://$CB_USER:$CB_PWD@127.0.0.1:8094/api/index/movies_shingle -d @$DEMO_DIR/indexes/movies_shingle.json
+couchbase-cli bucket-create -c $CB_SERVER -u $CB_USER -p $CB_PASSWORD --bucket $CB_MOVIE_BUCKET --bucket-type couchbase --bucket-ramsize 256 --bucket-replica 0 --bucket-priority low --bucket-eviction-policy valueOnly --enable-flush 1 --wait 
+couchbase-cli bucket-create -c $CB_SERVER -u $CB_USER -p $CB_PASSWORD --bucket $CB_TWEET_SOURCE_BUCKET --bucket-type couchbase --bucket-ramsize 32 --bucket-replica 0 --bucket-priority low --bucket-eviction-policy valueOnly --enable-flush 1 --wait
+couchbase-cli bucket-create -c $CB_SERVER -u $CB_USER -p $CB_PASSWORD --bucket $CB_TWEET_TARGET_BUCKET --bucket-type couchbase --bucket-ramsize 32 --bucket-replica 0 --bucket-priority low --bucket-eviction-policy valueOnly --enable-flush 1 --wait
+
+cd $DEMO_DIR/data
+echo "Loading Movie data"
+unzip moviedata.zip
+cbimport json -c $CB_ENGINE -u $CB_USER -p $CB_PASSWORD -b $CB_BUCKET -d file://$DEMO_DIR/data/moviedata.json  -f lines -g %type%::%id% -t 4
+rm moviedata.json
+echo "Loading Tweet data"
+unzip tweetsource.zip
+cbimport json -c $CB_ENGINE -u $CB_USER -p $CB_PASSWORD -b $CB_BUCKET -d file://$DEMO_DIR/data/tweetsource.json  -f lines -g historic::%tweetId% -t 4
+rm tweetsource.json
+
+echo "Creating GSI indices"
+cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD -f indexScript
+
+echo "Creating FTS indices"
+curl -XPUT -H "Content-type:application/json" http://$CB_USER:$CB_PASSWORD@127.0.0.1:8094/api/index/movies_shingle -d @$DEMO_DIR/indexes/movies_shingle.json
+curl -XPUT -H "Content-type:application/json" http://$CB_USER:$CB_PASSWORD@127.0.0.1:8094/api/index/movies_autocomplete -d @$DEMO_DIR/indexes/movies_autocomplete.json
