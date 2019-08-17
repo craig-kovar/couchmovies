@@ -1,347 +1,344 @@
-
-copy to clipboard
 {
- "name": "movies_shingle",
- "type": "fulltext-index",
- "params": {
-  "doc_config": {
-   "docid_prefix_delim": "",
-   "docid_regexp": "",
-   "mode": "type_field",
-   "type_field": "type"
+  "type": "fulltext-index",
+  "name": "movies_shingle",
+  "uuid": "58c7827fdbe97f7e",
+  "sourceType": "couchbase",
+  "sourceName": "moviedata",
+  "sourceUUID": "2185d222ff7e1512c89e527d143e2e8f",
+  "planParams": {
+    "maxPartitionsPerPIndex": 171
   },
-  "mapping": {
-   "analysis": {
-    "analyzers": {
-     "character_analyzer": {
-      "token_filters": [
-       "single_1_2",
-       "to_lower"
-      ],
-      "tokenizer": "unicode",
-      "type": "custom"
-     },
-     "names_analyzer": {
-      "token_filters": [
-       "to_lower",
-       "shigle_pure"
-      ],
-      "tokenizer": "unicode",
-      "type": "custom"
-     },
-     "overview_analyzer": {
-      "token_filters": [
-       "stop_en",
-       "to_lower",
-       "single_1_2"
-      ],
-      "tokenizer": "unicode",
-      "type": "custom"
-     },
-     "titles_analyzer": {
-      "token_filters": [
-       "to_lower",
-       "stop_en",
-       "shingle_simple"
-      ],
-      "tokenizer": "unicode",
-      "type": "custom"
-     }
+  "params": {
+    "doc_config": {
+      "docid_prefix_delim": "",
+      "docid_regexp": "",
+      "mode": "type_field",
+      "type_field": "type"
     },
-    "char_filters": {
-     "Remove colon": {
-      "regexp": ":",
-      "replace": "",
-      "type": "regexp"
-     }
-    },
-    "token_filters": {
-     "shigle_pure": {
-      "filler": "",
-      "max": 2,
-      "min": 2,
-      "output_original": false,
-      "separator": "",
-      "type": "shingle"
-     },
-     "shingle_simple": {
-      "filler": "",
-      "max": 2,
-      "min": 2,
-      "output_original": true,
-      "separator": "",
-      "type": "shingle"
-     },
-     "single_1_2": {
-      "filler": "",
-      "max": 2,
-      "min": 1,
-      "output_original": true,
-      "separator": "",
-      "type": "shingle"
-     }
-    }
-   },
-   "default_analyzer": "standard",
-   "default_datetime_parser": "dateTimeOptional",
-   "default_field": "_all",
-   "default_mapping": {
-    "dynamic": true,
-    "enabled": false
-   },
-   "default_type": "_default",
-   "docvalues_dynamic": true,
-   "index_dynamic": true,
-   "store_dynamic": false,
-   "type_field": "_type",
-   "types": {
-    "movie": {
-     "dynamic": false,
-     "enabled": true,
-     "properties": {
-      "cast": {
-       "default_analyzer": "names_analyzer",
-       "dynamic": false,
-       "enabled": true,
-       "properties": {
-        "character": {
-         "enabled": true,
-         "dynamic": false,
-         "fields": [
-          {
-           "analyzer": "titles_analyzer",
-           "include_in_all": true,
-           "include_term_vectors": true,
-           "index": true,
-           "name": "character",
-           "store": true,
-           "type": "text"
+    "mapping": {
+      "analysis": {
+        "analyzers": {
+          "character_analyzer": {
+            "token_filters": [
+              "single_1_2",
+              "to_lower"
+            ],
+            "tokenizer": "unicode",
+            "type": "custom"
+          },
+          "names_analyzer": {
+            "token_filters": [
+              "to_lower",
+              "shigle_pure"
+            ],
+            "tokenizer": "unicode",
+            "type": "custom"
+          },
+          "overview_analyzer": {
+            "token_filters": [
+              "stop_en",
+              "to_lower",
+              "single_1_2"
+            ],
+            "tokenizer": "unicode",
+            "type": "custom"
+          },
+          "titles_analyzer": {
+            "token_filters": [
+              "to_lower",
+              "stop_en",
+              "shingle_simple"
+            ],
+            "tokenizer": "unicode",
+            "type": "custom"
           }
-         ]
         },
-        "name": {
-         "enabled": true,
-         "dynamic": false,
-         "fields": [
-          {
-           "analyzer": "names_analyzer",
-           "include_in_all": true,
-           "include_term_vectors": true,
-           "index": true,
-           "name": "name",
-           "store": true,
-           "type": "text"
+        "char_filters": {
+          "Remove colon": {
+            "regexp": ":",
+            "replace": "",
+            "type": "regexp"
           }
-         ]
-        }
-       }
-      },
-      "collection": {
-       "dynamic": false,
-       "enabled": true,
-       "properties": {
-        "name": {
-         "enabled": true,
-         "dynamic": false,
-         "fields": [
-          {
-           "analyzer": "titles_analyzer",
-           "include_in_all": true,
-           "include_term_vectors": true,
-           "index": true,
-           "name": "name",
-           "store": true,
-           "type": "text"
-          }
-         ]
-        }
-       }
-      },
-      "crew": {
-       "dynamic": false,
-       "enabled": true,
-       "properties": {
-        "job": {
-         "enabled": true,
-         "dynamic": false,
-         "fields": [
-          {
-           "include_in_all": true,
-           "include_term_vectors": true,
-           "index": true,
-           "name": "job",
-           "store": true,
-           "type": "text"
-          }
-         ]
         },
-        "name": {
-         "enabled": true,
-         "dynamic": false,
-         "fields": [
-          {
-           "analyzer": "names_analyzer",
-           "include_in_all": true,
-           "include_term_vectors": true,
-           "index": true,
-           "name": "name",
-           "store": true,
-           "type": "text"
+        "token_filters": {
+          "shigle_pure": {
+            "filler": "",
+            "max": 2,
+            "min": 2,
+            "output_original": false,
+            "separator": "",
+            "type": "shingle"
+          },
+          "shingle_simple": {
+            "filler": "",
+            "max": 2,
+            "min": 2,
+            "output_original": true,
+            "separator": "",
+            "type": "shingle"
+          },
+          "single_1_2": {
+            "filler": "",
+            "max": 2,
+            "min": 1,
+            "output_original": true,
+            "separator": "",
+            "type": "shingle"
           }
-         ]
         }
-       }
       },
-      "genres": {
-       "dynamic": false,
-       "enabled": true,
-       "properties": {
-        "name": {
-         "enabled": true,
-         "dynamic": false,
-         "fields": [
-          {
-           "include_in_all": true,
-           "include_term_vectors": true,
-           "index": true,
-           "name": "name",
-           "store": true,
-           "type": "text"
+      "default_analyzer": "standard",
+      "default_datetime_parser": "dateTimeOptional",
+      "default_field": "_all",
+      "default_mapping": {
+        "dynamic": true,
+        "enabled": false
+      },
+      "default_type": "_default",
+      "docvalues_dynamic": true,
+      "index_dynamic": true,
+      "store_dynamic": false,
+      "type_field": "_type",
+      "types": {
+        "movie": {
+          "dynamic": false,
+          "enabled": true,
+          "properties": {
+            "cast": {
+              "default_analyzer": "names_analyzer",
+              "dynamic": false,
+              "enabled": true,
+              "properties": {
+                "character": {
+                  "dynamic": false,
+                  "enabled": true,
+                  "fields": [
+                    {
+                      "analyzer": "titles_analyzer",
+                      "include_in_all": true,
+                      "include_term_vectors": true,
+                      "index": true,
+                      "name": "character",
+                      "store": true,
+                      "type": "text"
+                    }
+                  ]
+                },
+                "name": {
+                  "dynamic": false,
+                  "enabled": true,
+                  "fields": [
+                    {
+                      "analyzer": "names_analyzer",
+                      "include_in_all": true,
+                      "include_term_vectors": true,
+                      "index": true,
+                      "name": "name",
+                      "store": true,
+                      "type": "text"
+                    }
+                  ]
+                }
+              }
+            },
+            "collection": {
+              "dynamic": false,
+              "enabled": true,
+              "properties": {
+                "name": {
+                  "dynamic": false,
+                  "enabled": true,
+                  "fields": [
+                    {
+                      "analyzer": "titles_analyzer",
+                      "include_in_all": true,
+                      "include_term_vectors": true,
+                      "index": true,
+                      "name": "name",
+                      "store": true,
+                      "type": "text"
+                    }
+                  ]
+                }
+              }
+            },
+            "crew": {
+              "dynamic": false,
+              "enabled": true,
+              "properties": {
+                "job": {
+                  "dynamic": false,
+                  "enabled": true,
+                  "fields": [
+                    {
+                      "include_in_all": true,
+                      "include_term_vectors": true,
+                      "index": true,
+                      "name": "job",
+                      "store": true,
+                      "type": "text"
+                    }
+                  ]
+                },
+                "name": {
+                  "dynamic": false,
+                  "enabled": true,
+                  "fields": [
+                    {
+                      "analyzer": "names_analyzer",
+                      "include_in_all": true,
+                      "include_term_vectors": true,
+                      "index": true,
+                      "name": "name",
+                      "store": true,
+                      "type": "text"
+                    }
+                  ]
+                }
+              }
+            },
+            "genres": {
+              "dynamic": false,
+              "enabled": true,
+              "properties": {
+                "name": {
+                  "dynamic": false,
+                  "enabled": true,
+                  "fields": [
+                    {
+                      "include_in_all": true,
+                      "include_term_vectors": true,
+                      "index": true,
+                      "name": "name",
+                      "store": true,
+                      "type": "text"
+                    }
+                  ]
+                }
+              }
+            },
+            "original_title": {
+              "dynamic": false,
+              "enabled": true,
+              "fields": [
+                {
+                  "analyzer": "titles_analyzer",
+                  "include_in_all": true,
+                  "include_term_vectors": true,
+                  "index": true,
+                  "name": "original_title",
+                  "store": true,
+                  "type": "text"
+                }
+              ]
+            },
+            "overview": {
+              "dynamic": false,
+              "enabled": true,
+              "fields": [
+                {
+                  "analyzer": "overview_analyzer",
+                  "include_in_all": true,
+                  "include_term_vectors": true,
+                  "index": true,
+                  "name": "overview",
+                  "store": true,
+                  "type": "text"
+                }
+              ]
+            },
+            "popularity": {
+              "dynamic": false,
+              "enabled": true,
+              "fields": [
+                {
+                  "include_in_all": true,
+                  "include_term_vectors": true,
+                  "index": true,
+                  "name": "popularity",
+                  "store": true,
+                  "type": "number"
+                }
+              ]
+            },
+            "promoted": {
+              "dynamic": false,
+              "enabled": true,
+              "fields": [
+                {
+                  "include_in_all": true,
+                  "include_term_vectors": true,
+                  "index": true,
+                  "name": "promoted",
+                  "store": true,
+                  "type": "boolean"
+                }
+              ]
+            },
+            "release_year": {
+              "dynamic": false,
+              "enabled": true,
+              "fields": [
+                {
+                  "include_in_all": true,
+                  "include_term_vectors": true,
+                  "index": true,
+                  "name": "release_year",
+                  "store": true,
+                  "type": "number"
+                }
+              ]
+            },
+            "runtime": {
+              "dynamic": false,
+              "enabled": true,
+              "fields": [
+                {
+                  "include_in_all": true,
+                  "include_term_vectors": true,
+                  "index": true,
+                  "name": "runtime",
+                  "store": true,
+                  "type": "number"
+                }
+              ]
+            },
+            "title": {
+              "dynamic": false,
+              "enabled": true,
+              "fields": [
+                {
+                  "analyzer": "titles_analyzer",
+                  "include_in_all": true,
+                  "include_term_vectors": true,
+                  "index": true,
+                  "name": "title",
+                  "store": true,
+                  "type": "text"
+                }
+              ]
+            },
+            "weightedRating": {
+              "dynamic": false,
+              "enabled": true,
+              "fields": [
+                {
+                  "include_in_all": true,
+                  "include_term_vectors": true,
+                  "index": true,
+                  "name": "weightedRating",
+                  "type": "number"
+                }
+              ]
+            }
           }
-         ]
         }
-       }
-      },
-      "original_title": {
-       "enabled": true,
-       "dynamic": false,
-       "fields": [
-        {
-         "analyzer": "titles_analyzer",
-         "include_in_all": true,
-         "include_term_vectors": true,
-         "index": true,
-         "name": "original_title",
-         "store": true,
-         "type": "text"
-        }
-       ]
-      },
-      "overview": {
-       "enabled": true,
-       "dynamic": false,
-       "fields": [
-        {
-         "analyzer": "overview_analyzer",
-         "include_in_all": true,
-         "include_term_vectors": true,
-         "index": true,
-         "name": "overview",
-         "store": true,
-         "type": "text"
-        }
-       ]
-      },
-      "popularity": {
-       "enabled": true,
-       "dynamic": false,
-       "fields": [
-        {
-         "include_in_all": true,
-         "include_term_vectors": true,
-         "index": true,
-         "name": "popularity",
-         "store": true,
-         "type": "number"
-        }
-       ]
-      },
-      "promoted": {
-       "enabled": true,
-       "dynamic": false,
-       "fields": [
-        {
-         "include_in_all": true,
-         "include_term_vectors": true,
-         "index": true,
-         "name": "promoted",
-         "store": true,
-         "type": "boolean"
-        }
-       ]
-      },
-      "release_year": {
-       "enabled": true,
-       "dynamic": false,
-       "fields": [
-        {
-         "include_in_all": true,
-         "include_term_vectors": true,
-         "index": true,
-         "name": "release_year",
-         "store": true,
-         "type": "number"
-        }
-       ]
-      },
-      "runtime": {
-       "enabled": true,
-       "dynamic": false,
-       "fields": [
-        {
-         "include_in_all": true,
-         "include_term_vectors": true,
-         "index": true,
-         "name": "runtime",
-         "store": true,
-         "type": "number"
-        }
-       ]
-      },
-      "title": {
-       "enabled": true,
-       "dynamic": false,
-       "fields": [
-        {
-         "analyzer": "titles_analyzer",
-         "include_in_all": true,
-         "include_term_vectors": true,
-         "index": true,
-         "name": "title",
-         "store": true,
-         "type": "text"
-        }
-       ]
-      },
-      "weightedRating": {
-       "enabled": true,
-       "dynamic": false,
-       "fields": [
-        {
-         "include_in_all": true,
-         "include_term_vectors": true,
-         "index": true,
-         "name": "weightedRating",
-         "type": "number"
-        }
-       ]
       }
-     }
+    },
+    "store": {
+      "indexType": "scorch",
+      "kvStoreName": ""
     }
-   }
   },
-  "store": {
-   "indexType": "scorch",
-   "kvStoreName": ""
-  }
- },
- "sourceType": "couchbase",
- "sourceName": "moviedata",
- "sourceUUID": "2185d222ff7e1512c89e527d143e2e8f",
- "sourceParams": {},
- "planParams": {
-  "maxPartitionsPerPIndex": 171,
-  "numReplicas": 0
- },
- "uuid": "58c7827fdbe97f7e"
+  "sourceParams": {}
 }
