@@ -14,12 +14,18 @@ cbimport json -c $CB_ENGINE -u $CB_USER -p $CB_PASSWORD -b $CB_TWEET_SOURCE_BUCK
 rm tweetsource.json
 
 echo "Creating GSI indices"
-cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script "CREATE INDEX `idx_type` ON `moviedata`(`type`);"
-cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script "CREATE INDEX `idx_primaryName` ON `moviedata`(`type`,`primaryName`,`birthYear`) WHERE (`type` = 'person');"
-cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script "CREATE INDEX `idx_castName` ON `moviedata`((distinct (array (`c`.`name`) for `c` in `cast` end))) WHERE (`type` = 'movie');"
-cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script "CREATE INDEX `idx_movieTitle` ON `moviedata`(`type`,`title`,`revenue`) WHERE (`type` = 'movie');"
-cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script "CREATE index idx_primaryName ON moviedata(primaryName) WHERE type = 'person'"
-cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script "CREATE PRIMARY INDEX ON tweetsource"
+cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script 'CREATE PRIMARY INDEX ON tweetsource'
+sleep 15s
+cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script 'CREATE INDEX idx_type ON moviedata(type) WITH {"defer_build":true}'
+sleep 15s
+cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script 'CREATE INDEX idx_primaryName ON moviedata(type,primaryName,birthYear) WHERE type = "person" WITH {"defer_build":true}'
+sleep 15s
+cbq -e couchbase://127.0.0.1 -u Administrator -p password --script "CREATE INDEX idx_castName ON moviedata((distinct (array (c.name) for c in \`cast\` end))) WHERE type = 'movie' WITH {'defer_build':true}"
+sleep 15s
+cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script 'CREATE INDEX idx_movieTitle ON moviedata(type,title,revenue) WHERE type = "movie" WITH {"defer_build":true}'
+sleep 15s
+cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script 'BUILD INDEX ON moviedata(idx_type, idx_primaryName, idx_castName, idx_movieTitle) USING GSI'
+
 
 echo "Creating FTS indices"
 curl -XPUT -H "Content-type:application/json" http://$CB_USER:$CB_PASSWORD@127.0.0.1:8094/api/index/movies_shingle -d @$DEMO_DIR/indexes/movies_shingle.json
