@@ -1,0 +1,9 @@
+#!/bin/bash
+
+couchbase-cli cluster-init --cluster $CB_SERVER --cluster-username $CB_USER --cluster-password $CB_PASSWORD \
+--cluster-name Couchmovies \
+--cluster-ramsize 320 \
+--cluster-fts-ramsize 256 \
+--cluster-index-ramsize 64 \
+--cluster-analytics-ramszie 128 \
+--services data,index,query,fts,analytics
