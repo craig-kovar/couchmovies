@@ -1,7 +1,7 @@
 #!/bin/bash -x
-couchbase-cli bucket-create -c $CB_SERVER -u $CB_USER -p $CB_PASSWORD --bucket $CB_MOVIE_BUCKET --bucket-type couchbase --bucket-ramsize 256 --bucket-replica 0 --bucket-priority low --bucket-eviction-policy valueOnly --enable-flush 1 --wait 
+couchbase-cli bucket-create -c $CB_SERVER -u $CB_USER -p $CB_PASSWORD --bucket $CB_MOVIE_BUCKET --bucket-type couchbase --bucket-ramsize 200 --bucket-replica 0 --bucket-priority low --bucket-eviction-policy valueOnly --enable-flush 1 --wait 
 couchbase-cli bucket-create -c $CB_SERVER -u $CB_USER -p $CB_PASSWORD --bucket $CB_TWEET_SOURCE_BUCKET --bucket-type couchbase --bucket-ramsize 100 --bucket-replica 0 --bucket-priority low --bucket-eviction-policy valueOnly --enable-flush 1 --wait
-couchbase-cli bucket-create -c $CB_SERVER -u $CB_USER -p $CB_PASSWORD --bucket $CB_TWEET_TARGET_BUCKET --bucket-type couchbase --bucket-ramsize 1002 --bucket-replica 0 --bucket-priority low --bucket-eviction-policy valueOnly --enable-flush 1 --wait
+couchbase-cli bucket-create -c $CB_SERVER -u $CB_USER -p $CB_PASSWORD --bucket $CB_TWEET_TARGET_BUCKET --bucket-type couchbase --bucket-ramsize 100 --bucket-replica 0 --bucket-priority low --bucket-eviction-policy valueOnly --enable-flush 1 --wait
 
 cd $DEMO_DIR/data
 echo "Loading Movie data"

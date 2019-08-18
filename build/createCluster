@@ -2,7 +2,7 @@
 
 couchbase-cli cluster-init --cluster $CB_SERVER --cluster-username $CB_USER --cluster-password $CB_PASSWORD \
 --cluster-name Couchmovies \
---cluster-ramsize 320 \
+--cluster-ramsize 512 \
 --cluster-fts-ramsize 256 \
 --cluster-index-ramsize 256 \
 --cluster-analytics-ramsize 1024 \
