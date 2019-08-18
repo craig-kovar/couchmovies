@@ -1,9 +1,52 @@
+# This page is still under development
+
+
 # CouchMovies
 
 This is a sample project shows how to build a search feature using Bleve/Couchbase FTS
 
 # Demo
-https://youtu.be/FYnke4o9aLw
+TBD
+
+## Intall (Docker)
+pull docker couchbase
+
+./startLocal couchbase couchmovies
+
+echo "Starting Couchbase standalone docker image '$1'  with name '$2'"
+docker run -d --name $2 -p 8091-8096:8091-8096 -p 11210-11211:11210-11211 -v ~/Documents/demos/Docker/local/files:/mac $1
+docker exec -it $2 bash 
+
+cd /mac
+./installTools
+
+#!/bin/bash
+
+apt-get update
+apt-get -y  install vim jq zip unzip git
+
+echo COLUMNS=300 >> ~/.bashrc
+echo export PS1='"\[\033[36m\]\u\[\033[m\]@\[\033[32m\]container:\[\033[33;1m\]\w\[\033[m\] $ "' >> ~/.bashrc
+echo export CLICOLOR=1 >> ~/.bashrc
+echo export LSCOLORS=ExFxBxDxCxegedabagacad >> ~/.bashrc
+echo export TERM=xterm >> ~/.bashrc
+
+echo "set nocompatible" > ~/.vimrc
+echo "set backspace=2" >> ~/.vimrc
+echo "set formatoptions-=r" >> ~/.vimrc
+echo "set formatoptions-=o" >> ~/.vimrc
+
+useradd -m -p $(openssl passwd -1 demo) demo
+su demo
+
+cd
+git clone https://github.com/escapedcanadian/couchmovies
+
+cd couchmovies/build
+<tweek env>
+. .env
+  
+  
 
 ## How to run this project
 
