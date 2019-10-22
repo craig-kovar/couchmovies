@@ -1,3 +1,16 @@
 #!/bin/bash
 sudo apt-get update
-sudo apt-get install zip unzip jq
+sudo apt-get install zip unzip jq maven openjdk-8-jdk python
+
+echo COLUMNS=300 >> ~/.bashrc
+echo export PS1='"\[\033[36m\]\u\[\033[m\]@\[\033[32m\]container:\[\033[33;1m\]\w\[\033[m\] $ "' >> ~/.bashrc
+echo export CLICOLOR=1 >> ~/.bashrc
+echo export LSCOLORS=ExFxBxDxCxegedabagacad >> ~/.bashrc
+echo export TERM=xterm >> ~/.bashrc
+
+echo "set nocompatible" > ~/.vimrc
+echo "set backspace=2" >> ~/.vimrc
+echo "set formatoptions-=r" >> ~/.vimrc
+echo "set formatoptions-=o" >> ~/.vimrc
+
+. ~/.bashrc
