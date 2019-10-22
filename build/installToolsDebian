@@ -1,6 +1,6 @@
 #!/bin/bash
 sudo apt-get update
-sudo apt-get install zip unzip jq maven openjdk-8-jdk python chromium-chromedriver
+sudo apt-get -y install zip unzip jq maven vim openjdk-8-jdk python chromium-chromedriver
 sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
 
 echo COLUMNS=300 >> ~/.bashrc
