@@ -1,6 +1,7 @@
 #!/bin/bash
 sudo apt-get update
-sudo apt-get install zip unzip jq maven openjdk-8-jdk python
+sudo apt-get install zip unzip jq maven openjdk-8-jdk python chromium-chromedriver
+sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
 
 echo COLUMNS=300 >> ~/.bashrc
 echo export PS1='"\[\033[36m\]\u\[\033[m\]@\[\033[32m\]container:\[\033[33;1m\]\w\[\033[m\] $ "' >> ~/.bashrc
