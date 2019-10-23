@@ -10,7 +10,7 @@ TBD
 
 ## Pull and run a docker image
 pull docker couchbase
-docker run -d --name couchmovies -p 8000:8000 -p 8080:8080 -p 8091-8096:8091-8096 -p 11210-11211:11210-11211 couchbase
+docker run -d --name couchmovies -p 8000:8000 -p 8080:8080 -p 6459:6459 -p 8091-8096:8091-8096 -p 11210-11211:11210-11211 couchbase
 docker exec -it couchmovies bash
 
 ## Configure environment inside Docker
@@ -25,9 +25,11 @@ echo "PATH=/opt/couchbase/bin:\$PATH" >> /home/demo/.profile
 su -l demo
 git clone https://github.com/escapedcanadian/couchmovies
 
+
 cd couchmovies/build
 . .env
 ./installToolsDebian
+
 ./createCluster
 ./loadData
 ./createRBAC
@@ -37,7 +39,8 @@ mvn clean install
 
 mvn spring-boot:run &
 
-./front/runWebServer &su 
+cd front
+./runWebServer &
 
 ```  
 
