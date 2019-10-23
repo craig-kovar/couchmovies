@@ -1,0 +1,14 @@
+couchbase-cli user-manage -c 127.0.0.1:8091 -u Administrator \
+ -p password --set --rbac-username moviedata --rbac-password password \
+ --rbac-name "moviedata" --roles fts_searcher[moviedata],data_reader[moviedata],query_manage_index[moviedata] \
+ --auth-domain local
+
+couchbase-cli user-manage -c 127.0.0.1:8091 -u Administrator \
+ -p password --set --rbac-username tweetsource --rbac-password password \
+ --rbac-name "tweetsource" --roles data_reader[tweetsource] \
+ --auth-domain local
+
+couchbase-cli user-manage -c 127.0.0.1:8091 -u Administrator \
+ -p password --set --rbac-username tweettarget --rbac-password password \
+ --rbac-name "tweettarget" --roles data_writer[tweettarget] \
+ --auth-domain local

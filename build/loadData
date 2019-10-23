@@ -1,20 +1,31 @@
 #!/bin/bash -x
-couchbase-cli bucket-create -c $CB_SERVER -u $CB_USER -p $CB_PASSWORD --bucket $CB_MOVIE_BUCKET --bucket-type couchbase --bucket-ramsize 256 --bucket-replica 0 --bucket-priority low --bucket-eviction-policy valueOnly --enable-flush 1 --wait 
-couchbase-cli bucket-create -c $CB_SERVER -u $CB_USER -p $CB_PASSWORD --bucket $CB_TWEET_SOURCE_BUCKET --bucket-type couchbase --bucket-ramsize 32 --bucket-replica 0 --bucket-priority low --bucket-eviction-policy valueOnly --enable-flush 1 --wait
-couchbase-cli bucket-create -c $CB_SERVER -u $CB_USER -p $CB_PASSWORD --bucket $CB_TWEET_TARGET_BUCKET --bucket-type couchbase --bucket-ramsize 32 --bucket-replica 0 --bucket-priority low --bucket-eviction-policy valueOnly --enable-flush 1 --wait
+couchbase-cli bucket-create -c $CB_SERVER -u $CB_USER -p $CB_PASSWORD --bucket $CB_MOVIE_BUCKET --bucket-type couchbase --bucket-ramsize 200 --bucket-replica 0 --bucket-priority low --bucket-eviction-policy valueOnly --enable-flush 1 --wait 
+couchbase-cli bucket-create -c $CB_SERVER -u $CB_USER -p $CB_PASSWORD --bucket $CB_TWEET_SOURCE_BUCKET --bucket-type couchbase --bucket-ramsize 100 --bucket-replica 0 --bucket-priority low --bucket-eviction-policy valueOnly --enable-flush 1 --wait
+couchbase-cli bucket-create -c $CB_SERVER -u $CB_USER -p $CB_PASSWORD --bucket $CB_TWEET_TARGET_BUCKET --bucket-type couchbase --bucket-ramsize 100 --bucket-replica 0 --bucket-priority low --bucket-eviction-policy valueOnly --enable-flush 1 --wait
 
 cd $DEMO_DIR/data
 echo "Loading Movie data"
 unzip moviedata.zip
-cbimport json -c $CB_ENGINE -u $CB_USER -p $CB_PASSWORD -b $CB_BUCKET -d file://$DEMO_DIR/data/moviedata.json  -f lines -g %type%::%id% -t 4
+cbimport json -c $CB_ENGINE -u $CB_USER -p $CB_PASSWORD -b $CB_MOVIE_BUCKET -d file://$DEMO_DIR/data/moviedata.json  -f lines -g %type%::%id% -t 4
 rm moviedata.json
 echo "Loading Tweet data"
 unzip tweetsource.zip
-cbimport json -c $CB_ENGINE -u $CB_USER -p $CB_PASSWORD -b $CB_BUCKET -d file://$DEMO_DIR/data/tweetsource.json  -f lines -g historic::%tweetId% -t 4
+cbimport json -c $CB_ENGINE -u $CB_USER -p $CB_PASSWORD -b $CB_TWEET_SOURCE_BUCKET -d file://$DEMO_DIR/data/tweetsource.json  -f lines -g historic::%tweetId% -t 4
 rm tweetsource.json
 
 echo "Creating GSI indices"
-cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD -f indexScript
+cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script 'CREATE PRIMARY INDEX ON tweetsource'
+sleep 15s
+cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script 'CREATE INDEX idx_type ON moviedata(type) WITH {"defer_build":true}'
+sleep 15s
+cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script 'CREATE INDEX idx_primaryName ON moviedata(type,primaryName,birthYear) WHERE type = "person" WITH {"defer_build":true}'
+sleep 15s
+cbq -e couchbase://127.0.0.1 -u Administrator -p password --script "CREATE INDEX idx_castName ON moviedata((distinct (array (c.name) for c in \`cast\` end))) WHERE type = 'movie' WITH {'defer_build':true}"
+sleep 15s
+cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script 'CREATE INDEX idx_movieTitle ON moviedata(type,title,revenue) WHERE type = "movie" WITH {"defer_build":true}'
+sleep 15s
+cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script 'BUILD INDEX ON moviedata(idx_type, idx_primaryName, idx_castName, idx_movieTitle) USING GSI'
+
 
 echo "Creating FTS indices"
 curl -XPUT -H "Content-type:application/json" http://$CB_USER:$CB_PASSWORD@127.0.0.1:8094/api/index/movies_shingle -d @$DEMO_DIR/indexes/movies_shingle.json

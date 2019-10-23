@@ -1,10 +1,8 @@
 {
   "type": "fulltext-index",
   "name": "movies_autocomplete",
-  "uuid": "a4bccacab3ba4553",
   "sourceType": "couchbase",
   "sourceName": "moviedata",
-  "sourceUUID": "2185d222ff7e1512c89e527d143e2e8f",
   "planParams": {
     "maxPartitionsPerPIndex": 171
   },

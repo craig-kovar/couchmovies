@@ -1,38 +1,46 @@
+# This page is still under development
+
+
 # CouchMovies
 
 This is a sample project shows how to build a search feature using Bleve/Couchbase FTS
 
 # Demo
-https://youtu.be/FYnke4o9aLw
+TBD
 
-## How to run this project
+## Pull and run a docker image
+pull docker couchbase
+docker run -d --name couchmovies -p 8000:8000 -p 8080:8080 -p 8091-8096:8091-8096 -p 11210-11211:11210-11211 couchbase
+docker exec -it couchmovies bash
 
-1) Download and Install Couchbase https://www.couchbase.com/downloads
-2) Unzip the file datasets.zip under the "data" folder
-3) Go to the "bin" directory of you Couchbase installation( on mac: "/Applications/Couchbase\ Server.app/Contents/Resources/couchbase-core/bin/")
-4) Load the movies dataset with the following command:
+## Configure environment inside Docker
 ```
-./cbimport json -c couchbase://127.0.0.1 -u Administrator -p password -b movies -d file:///Users/deniswsrosa/Desktop/FTS/the-movies-dataset/cb-movies-dataset2.json  -f list -g key::%id% -t 4
-```
+apt-get update
+apt-get -y  install git sudo
 
-5) Load the actors dataset with the following command:
-```
-./cbimport json -c couchbase://127.0.0.1 -u Administrator -p password -b movies -d file:///Users/deniswsrosa/Desktop/FTS/the-movies-dataset/cb-movies-actors.json  -f list -g %id% -t 4 -v
-```
-6) Create index with
-```
-curl -XPUT -H "Content-type:application/json" http://<USER>:<PASSWORD>@<IP_ADDRESSES>:8094/api/index/movies_shingle -d @movies_shingle.json
-```
+useradd -m -p $(openssl passwd -1 demo) demo
+usermod -aG sudo demo
+echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+echo "PATH=/opt/couchbase/bin:\$PATH" >> /home/demo/.profile
+su -l demo
+git clone https://github.com/escapedcanadian/couchmovies
 
-7) Run the following command on the root folder of this project:
-```
+cd couchmovies/build
+. .env
+./installToolsDebian
+./createCluster
+./loadData
+./createRBAC
+
+cd /home/demo/couchmovies
 mvn clean install
-```
 
-8) Then run this command to start de application:
-```
-mvn spring-boot:run
-```
+mvn spring-boot:run &
+
+./front/runWebServer &su 
+
+```  
+
 
 9) Copy the content of the "front" folder in a web server (Ex: NGINX) and access the couchflix.html
 
