@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "/Users/davidbrown/Documents/demos/CI/microsvc"
 		}
 	],
 	"settings": {}

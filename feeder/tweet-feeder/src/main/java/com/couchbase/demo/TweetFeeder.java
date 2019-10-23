@@ -32,7 +32,7 @@ public final class TweetFeeder {
 
         System.out.println("Starting Demo Tweet Feeder");
 
-        Cluster cluster = CouchbaseCluster.create("3.14.224.51");
+        Cluster cluster = CouchbaseCluster.create("127.0.0.1");
         try {
             Bucket sourceBucket = cluster.openBucket("tweetsource", "password");
             System.out.println("Connected to tweetsource bucket");
@@ -53,7 +53,7 @@ public final class TweetFeeder {
                 targetBucket.upsert(doc);
                 count = count + 1;
                 System.out.println("Inserted tweet id: " + id + " total: " + count );
-                TimeUnit.SECONDS.sleep(1);
+                TimeUnit.MILLISECONDS.sleep(250); 
          }
 
 
