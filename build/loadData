@@ -14,6 +14,9 @@ cbimport json -c $CB_ENGINE -u $CB_USER -p $CB_PASSWORD -b $CB_TWEET_SOURCE_BUCK
 rm tweetsource.json
 
 echo "Creating GSI indices"
+
+cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script 'CREATE PRIMARY INDEX ON moviedata'
+sleep 30s
 cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script 'CREATE PRIMARY INDEX ON tweetsource'
 sleep 15s
 cbq -e $CB_ENGINE -u $CB_USER -p $CB_PASSWORD --script 'CREATE INDEX idx_type ON moviedata(type) WITH {"defer_build":true}'
