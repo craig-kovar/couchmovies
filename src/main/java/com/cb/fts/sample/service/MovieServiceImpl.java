@@ -416,32 +416,35 @@ public class MovieServiceImpl implements MovieService {
                 movies.add( new SearchResult(movieRepository.findById(row.id()).get(), new QueryStats(counter, row)));
                 counter++;
             }
+       
+
+            rt.setResults(movies);
+
+            List<Facet> facets = new ArrayList<>();
+
+            DefaultTermFacetResult genres = (DefaultTermFacetResult) result.facets().get("genres");
+            if(genres != null & genres.terms().size() >0){
+
+                List<FacetItem> items =  genres.terms().stream().map(e->new FacetItem(e.name(), e.count())).collect(Collectors.toList());
+                facets.add(new Facet("genres", items));            
+            }
+            DefaultNumericRangeFacetResult years = (DefaultNumericRangeFacetResult) result.facets().get("year");
+            if(years != null & years.numericRanges().size() >0){
+
+                List<FacetItem> items =  years.numericRanges().stream().map(e->new FacetItem(e.name(), e.count())).collect(Collectors.toList());
+                Collections.sort(items, new Comparator<FacetItem>() {
+                    @Override
+                    public int compare(FacetItem o1, FacetItem o2) {
+                        return o2.getName().compareTo(o1.getName());
+                    }
+                });
+                facets.add(new Facet("year", items));            
+            }
+    
+            rt.setFacets(facets);
+        } else {
+            rt.setResults(movies);
         }
-
-        rt.setResults(movies);
-
-        List<Facet> facets = new ArrayList<>();
-
-        DefaultTermFacetResult genres = (DefaultTermFacetResult) result.facets().get("genres");
-        if(genres != null & genres.terms().size() >0){
-
-            List<FacetItem> items =  genres.terms().stream().map(e->new FacetItem(e.name(), e.count())).collect(Collectors.toList());
-            facets.add(new Facet("genres", items));            
-        }
-        DefaultNumericRangeFacetResult years = (DefaultNumericRangeFacetResult) result.facets().get("year");
-        if(years != null & years.numericRanges().size() >0){
-
-            List<FacetItem> items =  years.numericRanges().stream().map(e->new FacetItem(e.name(), e.count())).collect(Collectors.toList());
-            Collections.sort(items, new Comparator<FacetItem>() {
-                @Override
-                public int compare(FacetItem o1, FacetItem o2) {
-                    return o2.getName().compareTo(o1.getName());
-                }
-            });
-            facets.add(new Facet("year", items));            
-        }
- 
-        rt.setFacets(facets);
         return rt;
     }
 
