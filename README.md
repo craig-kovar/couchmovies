@@ -9,10 +9,11 @@ This is a sample project shows how to build a search feature using Bleve/Couchba
 TBD
 
 ## Pull and run a docker image
+```
 pull docker couchbase
 docker run -d --name couchmovies -p 8000:8000 -p 8080:8080 -p 6459:6459 -p 8091-8096:8091-8096 -p 11210-11211:11210-11211 couchbase
 docker exec -it couchmovies bash
-
+```
 ## Configure environment inside Docker
 ```
 apt-get update
@@ -33,6 +34,11 @@ cd couchmovies/build
 ./createCluster
 ./loadData
 ./createRBAC
+./reset
+./installServicesDebian
+
+# At this point, it is prudent to check that there are three populated buckets
+# and all created indices are ready
 
 cd /home/demo/couchmovies
 mvn clean install
@@ -45,9 +51,12 @@ cd front
 ```  
 
 
-9) Copy the content of the "front" folder in a web server (Ex: NGINX) and access the couchflix.html
+# Running the demo
 
-10) OPTIONAL: If you want to enable the image cover (the image that appears when you click over a movie) you will need to install a chrome driver:
+http://localhost:8000/couchmovies.html
+
+
+OPTIONAL: If you want to enable the image cover (the image that appears when you click over a movie) you will need to install a chrome driver:
 ```
 brew cask install chromedriver //on mac
 ```
