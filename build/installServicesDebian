@@ -1,0 +1,12 @@
+#!/bin/bash
+echo 'Installing Couchmovies Microserver service'
+sudo cp ../services/movieservice /etc/init.d/movieservice
+sudo chmod +x /etc/init.d/movieservice
+sudo update-rc.d movieservice defaults
+sudo service movieservice start
+
+echo 'Installing Couchmovies Web Server service'
+sudo cp ../services/movieserver /etc/init.d/movieserver
+sudo chmod +x /etc/init.d/movieserver
+sudo update-rc.d movieserver defaults
+sudo service movieserver start
