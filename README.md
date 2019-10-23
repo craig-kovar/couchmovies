@@ -18,7 +18,6 @@ docker exec -it couchmovies bash
 ```
 apt-get update
 apt-get -y  install git sudo
-
 useradd -m -p $(openssl passwd -1 demo) demo
 usermod -aG sudo demo
 echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
@@ -30,24 +29,15 @@ git clone https://github.com/escapedcanadian/couchmovies
 cd couchmovies/build
 . .env
 ./installToolsDebian
-
 ./createCluster
 ./loadData
 ./createRBAC
-./reset
-./installServicesDebian
+./resetTweets
 
 # At this point, it is prudent to check that there are three populated buckets
 # and all created indices are ready
 
-cd /home/demo/couchmovies
-mvn clean install
-
-mvn spring-boot:run &
-
-cd front
-./runWebServer &
-
+./installServicesDebian
 ```  
 
 
