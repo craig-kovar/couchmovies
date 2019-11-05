@@ -1,4 +1,5 @@
 # This page is still under development
+Next step is to build a Docker compose environment that links on container with CB and another running the services, allowing the CB image to be updated
 
 
 # CouchMovies
@@ -42,8 +43,41 @@ cd couchmovies/build
 
 
 # Running the demo
+Other than having the server running, you need three additional processes.  While you could run these in the same temrminal and background them, I typically run them in separate terminals
 
+### The microservice
+For historical reasons,this project is built out of the root directory.  To build the service, run
+```
+mvn clean install
+```
+Followed by
+```
+mvn spring-boot-run
+```
+
+### The webserver
+This simple HTTP server serves up the single content page, but, for cross domain authentication reasons, it needs to be run on the same server as the microservice
+```
+front/runWebServer
+```
+With this server running, you should see the Couchmovies page load on 
 http://localhost:8000/couchmovies.html
+
+
+### Tweet Feeder
+You should prepare to run this process, but don't run it until you have shown the Tableau dashboard as-is, with the single tweet. The Tableau dashboard is wholly unhappy if there is no data in the dataset, so we start with a single tweet.
+
+This process pulls the tweets from the tweetSource bucket and puts them into the tweetTarget bucket at a rate of 4 per second (it would be nice to pass a parameter in to control the rate some day).
+
+```
+tweet-feeder/startFeeder
+```
+You can reset the tweetTarget bucket to contain a single tweet using
+```
+cd build
+. .env
+./resetTweets
+```
 
 
 OPTIONAL: If you want to enable the image cover (the image that appears when you click over a movie) you will need to install a chrome driver:
