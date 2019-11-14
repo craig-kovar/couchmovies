@@ -12,7 +12,7 @@
 
 NAME="movieserver"
 PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin"
-APPDIR="/home/demo/couchmovies/front"
+APPDIR="/couchmovies/front"
 APPBIN="/usr/bin/python"
 APPARGS="-m SimpleHTTPServer 8000"
 USER="demo"

@@ -12,7 +12,7 @@
 
 NAME="movieservice"
 PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin"
-APPDIR="/home/demo/couchmovies"
+APPDIR="/couchmovies"
 APPBIN="/usr/bin/mvn"
 APPARGS="spring-boot:run"
 USER="demo"
